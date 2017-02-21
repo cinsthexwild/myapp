@@ -82,12 +82,30 @@ var AppRouter = Backbone.Router.extend({
 
 var HomeView = Backbone.View.extend({
     el: 'body',
-    template: _.template('Hello World'),
+    template: _.template('Hello World.<br><input>'),
+
     render: function () {
         this.$el.html(this.template({}));
+        // A good convention is to return this at the end of render to enable chained calls.
+        return this;
+    },
+
+    events: {
+        "keydown input" : "keyAction",
+    },
+
+    keyAction: function(e) {
+        if (e.which === 13) {
+            alert('input: ' + this.$('input').val());
+        }
     }
+
 });
 
+/**
+ * Because hash-based history in Internet Explorer relies on an <iframe>,
+ * be sure to call start() only after the DOM is ready.
+ */
 $(function () {
     // var routeObj = {'home(/)': 'homePage'};
     // app = new AppRouter(routeObj);
