@@ -2,15 +2,32 @@
  * Created by cinsthexwild on 2017/2/20.
  */
 
-
-var app;
+/**
+ * Global, define something.
+ * @type {{views: {}, models: {}, AppRouter: undefined}}
+ */
+var App = {};
 
 /**
+ * store views
+ * @type {{}}
+ */
+App.views = {};
+
+/**
+ * store models
+ * @type {{}}
+ */
+App.models = {};
+
+/**
+ * controller
+ *
  * Creating a custom router class. Define actions that are triggered when certain URL fragments are matched,
  * and provide a routes hash that pairs routes to actions.
  * Note that you'll want to avoid using a leading slash in your route definitions
  */
-var AppRouter = Backbone.Router.extend({
+App.AppRouter = Backbone.Router.extend({
     routes: {
         'home(/)': 'homePage', // #home or #home/
         'search/:arg0(/:arg1)': 'search', // #search/arg0/arg1 => (/:optional)
@@ -39,11 +56,15 @@ var AppRouter = Backbone.Router.extend({
     execute: function(callback, args, name) {
         if (!this.loggedIn) {
             this.goToLogin(_.bind(function () {
-                if (callback) callback.apply(this, args);
+                if (callback) {
+                    callback.apply(this, args);
+                }
             }, this));
             return false;
         }
-        if (callback) callback.apply(this, args);
+        if (callback) {
+            callback.apply(this, args);
+        }
     },
 
     goToLogin: function (callback) {
@@ -63,7 +84,14 @@ var AppRouter = Backbone.Router.extend({
     },
 
     homePage: function () {
-        this.homeView = new HomeView();
+        this.homeView = new App.views.Home();
+
+        // By default, delegateEvents is called within the View's constructor. When delegateEvents is run again, perhaps with a different events hash,
+        // all callbacks are removed and delegated afresh — useful for views which need to behave differently when in different modes.
+        // this.homeView.delegateEvents({
+        //     "keydown input" : "keyAction2"
+        // });
+
         this.homeView.render();
     },
 
@@ -80,9 +108,15 @@ var AppRouter = Backbone.Router.extend({
     }
 });
 
-var HomeView = Backbone.View.extend({
-    el: 'body',
+App.views.Home = Backbone.View.extend({
+    el: '.header',
     template: _.template('Hello World.<br><input>'),
+    events: {
+        "keydown input" : "keyAction"
+    },
+
+    initialize: function () {
+    },
 
     render: function () {
         this.$el.html(this.template({}));
@@ -90,13 +124,19 @@ var HomeView = Backbone.View.extend({
         return this;
     },
 
-    events: {
-        "keydown input" : "keyAction",
-    },
-
     keyAction: function(e) {
         if (e.which === 13) {
             alert('input: ' + this.$('input').val());
+
+
+            this.book1 = new App.views.Book({model: new App.models.Book({name: 'javascript pro'})});
+            this.book1.render();
+        }
+    },
+
+    keyAction2: function(e) {
+        if (e.which === '6'.charCodeAt(0)) {
+            alert('bingo: ' + this.$('input').val());
         }
     }
 
@@ -108,8 +148,8 @@ var HomeView = Backbone.View.extend({
  */
 $(function () {
     // var routeObj = {'home(/)': 'homePage'};
-    // app = new AppRouter(routeObj);
-    app = new AppRouter();
+    // app = new App.AppRouter(routeObj);
+    app = new App.AppRouter();
 
     /**
      * When the visitor presses the back button, or enters a URL, and a particular route is matched,
@@ -124,4 +164,44 @@ $(function () {
      * be sure to call Backbone.history.start() or Backbone.history.start({pushState: true}) to route the initial URL.
      */
     Backbone.history.start();
+});
+
+
+//////
+
+
+App.models.Book = Backbone.Model.extend({
+    /**
+     * The defaults hash (or function) can be used to specify the default attributes for your model.
+     * When creating an instance of the model, any unspecified attributes will be set to their default value.
+     */
+    defaults: {
+        name: 'book name',
+        author: 'book author'
+    }
+});
+
+App.views.Book = Backbone.View.extend({
+    el: '.content',
+    template: _.template('<div><span><%- name %></span>, &copy; <%- author %></div>'),
+    model : undefined,
+    events: {
+        "keydown input" : "keyAction"
+    },
+
+    initialize: function () {
+        this.model.bind("change", this.render, this);
+    },
+
+    render: function () {
+        this.$el.html(this.template(this.model.toJSON()));
+        return this;
+    },
+
+    keyAction: function(e) {
+        if (e.which === 13) {
+            alert('input: ' + this.$('input').val());
+        }
+    }
+
 });
