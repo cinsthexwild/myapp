@@ -4,7 +4,7 @@
 .t-css .h50 {
   height: 50px;
 }
-.t-css .t-position .box {
+.t-css .box {
   position: relative;
   width: 200px;
   height: 200px;
@@ -76,4 +76,14 @@
 }
 .t-css .t-flex .flex1 {
   flex: 1;
+}
+.t-css .t-flex .flex-center {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+.t-css .t-flex .flex-center .flex-content {
+  width: 80px;
+  border: 1px solid blue;
 }

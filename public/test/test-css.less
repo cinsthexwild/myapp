@@ -10,17 +10,17 @@
   .h50 {
     height: 50px;
   }
+  .box {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border: 1px solid red;
+    margin: 10px;
+    display: inline-block;
+  }
 
   // 居中
   .t-position {
-    .box {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      border: 1px solid red;
-      margin: 10px;
-      display: inline-block;
-    }
 
     .center-h {
       position: absolute;
@@ -95,5 +95,15 @@
       flex: 1;
     }
 
+    .flex-center {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      justify-content: center;
+      .flex-content {
+        width: 80px;
+        border: 1px solid blue;
+      }
+    }
   }
 }
